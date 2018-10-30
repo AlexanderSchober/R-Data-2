@@ -17,86 +17,21 @@
 # 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # Module authors:
-#   Alexander Schober <alexander.schober@mac.com>
+#   Alexander Schober <alex.schober@mac.com>
 #
 # *****************************************************************************
 
 #############################
-#mathematic libraries
-import numpy as np
+#personal libraries
+from .sample_element import SampleElement
 
-class Property():
-    
-    def __init__(self, **kwargs):
-        '''
-        ##############################################
-        This is the main property handler and will be
-        considered the actor for the general operaitons
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
-        pass
 
-class PointProperty():
-    
-    def __init__(self, **kwargs):
-        '''
-        ##############################################
-        This will be the class managing all surface 
-        type of effects.
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
-
-class LineProperty():
-    
-    def __init__(self, **kwargs):
-        '''
-        ##############################################
-        This will be the class managing all surface 
-        type of effects.
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
-
-class SurfaceProperty():
+class SampleHandler():
 
     def __init__(self, **kwargs):
         '''
         ##############################################
-        This will be the class managing all surface 
-        type of effects.
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
         
-class VolumeProperty():
-    
-    def __init__(self, **kwargs):
-        '''
-        ##############################################
-        This will be the class managing all surface 
-        type of effects.
         ———————
         Input: -
         ———————
@@ -105,15 +40,21 @@ class VolumeProperty():
         status: active
         ##############################################
         '''
+
+        #initialise local variable
+        self.elements       = {}
+
+        #set initial parameters
+        self.initializeAttributes()
+
+        #overwrite attributes
+        for key in kwargs.keys():
+            self.__setattr__(key, kwargs[key])
         
-
-class OpticalProperty(Property,VolumeProperty):
-    
-    def __init__(self, **kwargs):
+    def initializeAttributes(self):
         '''
         ##############################################
-        This will be the class managing all surface 
-        type of effects.
+         
         ———————
         Input: -
         ———————
@@ -122,16 +63,56 @@ class OpticalProperty(Property,VolumeProperty):
         status: active
         ##############################################
         '''
-        Property.__init__(self)
+        self.elements   = {}
 
-
-class SpectroscopicProperty(Property,VolumeProperty):
-    
-    def __init__(self, **kwargs):
+    def generateScript(self, indentation = 0, parent = ""):
         '''
         ##############################################
-        This will be the class managing all surface 
-        type of effects.
+        This method will allow the generation of a 
+        script of the current structure.
+        ———————
+        Input (optional): -
+        ———————
+        Output: -
+        ———————
+        status: active
+        ##############################################
+        '''
+        indent = "    "
+        output = indentation * indent + "\n"
+
+        for key in self.elements.keys():
+
+            #start the sample element creation
+            output += indentation * indent + "### Adding the sample element: "+str(key)+"\n"
+            output += indentation * indent + parent + "newElement(\n"
+            output += (indentation + 1) * indent + "'" + str(self.elements[key].name) + "',\n"
+
+            #check what we have to deal with
+            if self.elements[key].geometry.identifier_type == 'Surface':
+                output += (indentation + 1) * indent + "surface = " 
+
+            elif self.elements[key].geometry.identifier_type == 'Volume':
+                output += (indentation + 1) * indent + "volume = " 
+
+            output += "'" + self.elements[key].geometry.type_name + "',\n"
+            output += (indentation + 1) * indent + "color = np.asarray(" 
+            output += str(self.elements[key].geometry.color.tolist())+ ")"
+
+            # close it up
+            output += indentation * indent + ")\n\n"
+
+            root = parent + "elements['"+key+"']."
+
+            output += self.elements[key].generateScript(indentation, root)
+
+        return output
+
+        
+    def newElement(self, name = 'None', **kwargs):
+        '''
+        ##############################################
+        
         ———————
         Input: -
         ———————
@@ -140,4 +121,11 @@ class SpectroscopicProperty(Property,VolumeProperty):
         status: active
         ##############################################
         '''
-        Property.__init__(self)
+        if name == 'None':
+
+            name = "sample_"+len(self.elements.keys())
+
+        self.elements[name] = SampleElement(name = name, **kwargs)
+
+        return self.elements[name]
+

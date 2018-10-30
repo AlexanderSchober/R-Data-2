@@ -21,30 +21,18 @@
 #
 # *****************************************************************************
 
+class Line:
 
-from ..io.io_raw_import     import IORawHandler
-from ..io.io_data_import    import IOImportHandler
-
-class IOHandler:
-    '''
-    ##############################################
-    
-    ———————
-    Input: -
-    ———————
-    Output: -
-    ———————
-    status: active
-    ##############################################
-    '''
     def __init__(self):
+        '''
+        ##############################################
+        
+        ———————
+        Input: -
+        ———————
+        Output: -
+        ———————
+        status: active
+        ##############################################
+        '''
         pass
-
-    def setupRawImporter(self):
-        
-        self.target = IORawHandler()
-
-    def setupDataImporter(self):
-        
-        self.target = IOImportHandler()
-

@@ -17,7 +17,7 @@
 # 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # Module authors:
-#   Alexander Schober <alexander.schober@mac.com>
+#   Alexander Schober <alex.schober@mac.com>
 #
 # *****************************************************************************
 
@@ -48,13 +48,13 @@ class Geometry(Environment):
 
         #initialize with a cube
         if 'volume' in kwargs.keys():
-            exec("self.element = "+str(kwargs['volume'])+"(**kwargs)")
+            exec("self.geometry = "+str(kwargs['volume'])+"(**kwargs)")
 
         elif 'surface' in kwargs.keys():
-            exec("self.element = "+str(kwargs['surface'])+"(**kwargs)")
+            exec("self.geometry = "+str(kwargs['surface'])+"(**kwargs)")
 
         else:
-            self.element = Cube(**kwargs)
+            self.geometry = Cube(**kwargs)
 
     def rotate(self, axis, angle, origin = [0,0,0]):
         '''
@@ -74,7 +74,7 @@ class Geometry(Environment):
         '''
         transformation = Rotation(axis, angle, origin)
 
-        self.element.applyTransformation(transformation) 
+        self.geometry.applyTransformation(transformation) 
 
     def translate(self, vector):
         '''
@@ -94,7 +94,7 @@ class Geometry(Environment):
         '''
         transformation = Translation(vector)
 
-        self.element.applyTransformation(transformation) 
+        self.geometry.applyTransformation(transformation) 
 
     def moveTo(self, position):
         '''
@@ -114,9 +114,9 @@ class Geometry(Environment):
         '''
         transformation = Translation(position)
 
-        self.element.applyTransformation(transformation) 
+        self.geometry.applyTransformation(transformation) 
 
-    def generateScriptGeometry(self, indentation = 0, root = ''):
+    def generateScriptGeometry(self, indentation = 0, parent = ''):
         '''
         ##############################################
         This method will allow the generation of a 
@@ -131,6 +131,6 @@ class Geometry(Environment):
         '''
         indent = "    "
         output = indentation * indent + "######### GEOMETRY #########\n\n"
-        output += self.element.generateScript(indentation, root + "element.")
+        output += self.geometry.generateScript(indentation, parent + "geometry.")
 
         return output

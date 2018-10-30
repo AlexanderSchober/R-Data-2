@@ -2,7 +2,7 @@ import sys
 from PyQt5 import QtGui, QtCore
 
 
-class Main_Window_Handler:
+class MainWindowHandler:
     '''
     ##############################################
     Initializer of the class, It will immediately call

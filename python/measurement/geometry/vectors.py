@@ -17,29 +17,11 @@
 # 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # Module authors:
-#   Alexander Schober <alexander.schober@mac.com>
+#   Alexander Schober <alex.schober@mac.com>
 #
 # *****************************************************************************
 
 
-
-#############################
-#mathematic libraries
+from .points import Point
+from .lines import Line
 import numpy as np
-
-class RamanSpectrometer():
-    
-    def __init__(self, **kwargs):
-        '''
-        ##############################################
-        This class will mange all the physical proper-
-        ties of a sample. This can be surface, volume
-        or tensor properties. 
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''

@@ -17,16 +17,23 @@
 # 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # Module authors:
-#   Alexander Schober <alexander.schober@mac.com>
+#   Alexander Schober <alex.schober@mac.com>
 #
 # *****************************************************************************
 
-class Environment:
+#############################
+#personal libraries
+from ..geometry.geometry     import Geometry 
+from ..physics.physics       import Physics
 
-    def __init__(self):
+class SampleElement(Geometry, Physics):
+    
+    def __init__(self, name = None, **kwargs):
         '''
         ##############################################
-        
+        This is a sample element ans will contain all 
+        the information about its spatial shape and
+        its physical properties.
         ———————
         Input: -
         ———————
@@ -35,6 +42,30 @@ class Environment:
         status: active
         ##############################################
         '''
-        
-        self.position       = [0,0,0]
-        self.orientation    = [0,0,0]
+
+        #initialiset he position and orientations
+        Geometry.__init__(self, **kwargs)
+        Physics.__init__(self, **kwargs)
+
+        self.name = name
+
+    def generateScript(self, indentation = 0, root = ''):
+        '''
+        ##############################################
+        This method will allow the generation of a 
+        script of the current structure.
+        ———————
+        Input (optional): -
+        ———————
+        Output: -
+        ———————
+        status: active
+        ##############################################
+        '''
+        indent = "    "
+        output = ""
+        output += self.generateScriptGeometry(indentation, root)
+        output += self.generateScriptPhysics(indentation, root)
+    
+        return output
+

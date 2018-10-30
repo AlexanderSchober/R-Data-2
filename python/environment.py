@@ -22,10 +22,13 @@
 # *****************************************************************************
 
 
-from ..io.io_raw_import     import IORawHandler
-from ..io.io_data_import    import IOImportHandler
+#######################################
+#gui imports
+from .io.io_handler         import IOHandler
+from .data.datastructure    import Data_Structure
+from .measurement.measurement_handler import Measurement
 
-class IOHandler:
+class EnvironmentHandler:
     '''
     ##############################################
     
@@ -38,13 +41,34 @@ class IOHandler:
     ##############################################
     '''
     def __init__(self):
-        pass
+        self.environments = {}
 
-    def setupRawImporter(self):
+    def addEnv(self, name = 'No Name'):
+        self.environments[name] = Environment(name)
+        self.setCurrentEnv(name)
+
+    def setCurrentEnv(self, name):
+        self.current_env = self.environments[name]
+
+    def getCurrentEnv(self):
+        return self.current_env
+
+class Environment:
+    '''
+    ##############################################
+    
+    ———————
+    Input: -
+    ———————
+    Output: -
+    ———————
+    status: active
+    ##############################################
+    '''
+    def __init__(self, name):
+        self.name   = name
+        self.io     = IOHandler()
+        self.data   = Data_Structure()
+        self.meas   = Measurement()
         
-        self.target = IORawHandler()
-
-    def setupDataImporter(self):
         
-        self.target = IOImportHandler()
-

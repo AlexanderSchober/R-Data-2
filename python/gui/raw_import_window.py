@@ -17,23 +17,23 @@
 # 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # Module authors:
-#   Alexander Schober <alexander.schober@mac.com>
+#   Alexander Schober <alex.schober@mac.com>
 #
 # *****************************************************************************
 
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 import sys
-sys.path.append("..")
 import os
 
-from ..gui import raw_import_ui
-from ..io  import io_handler
+from ..gui_qt.raw_import_ui import Ui_raw_import_window
+from ..gui.list_container   import ListContainer
+from ..gui.python_syntax    import PythonHighlighter
 
 from simpleplot.multi_canvas import Multi_Canvas
 
 
-class Raw_Window(raw_import_ui.Ui_raw_import_window):
+class Raw_Window(Ui_raw_import_window):
     '''
     ##############################################
     This class will manage the raw import 
@@ -52,20 +52,51 @@ class Raw_Window(raw_import_ui.Ui_raw_import_window):
 
         ##############################################
         #Local pointers
-        raw_import_ui.Ui_raw_import_window.__init__(self)
+        Ui_raw_import_window.__init__(self)
 
         self.io_handler = io_handler
         self.io_handler.init_raw_import()
     
         ##############################################
         #Local pointers
-        #self.parent         = parent
-        #self.window_manager = window_manager
         self.window = window
         self.setupUi(window)
         self.connect_methods()
         self._build_list_containers()
         self._initate_graph()
+        self._set_meas()
+
+    def _set_meas(self):
+        '''
+        ##############################################
+        This method will connect all click events to
+        the right handlers. 
+        ———————
+        Input: -
+        ———————
+        Output: -
+        ———————
+        status: active
+        ##############################################
+        '''
+        self.syntaxHighliter = PythonHighlighter(self.meta_text_code.document())
+        self.meta_text_code.setPlainText(self.io_handler.meas_string)
+        self.meta_button_load.clicked.connect(self.run_code)
+
+    def run_code(self):
+        '''
+        ##############################################
+        This method will connect all click events to
+        the right handlers. 
+        ———————
+        Input: -
+        ———————
+        Output: -
+        ———————
+        status: active
+        ##############################################
+        '''
+        exec(self.meta_text_code.toPlainText())
 
     def _initate_graph(self):
         '''
@@ -80,7 +111,6 @@ class Raw_Window(raw_import_ui.Ui_raw_import_window):
         status: active
         ##############################################
         '''
-
         self.mycanvas    = Multi_Canvas(
             self.visual_widget_plot,
             grid        = [[True]],
@@ -90,8 +120,7 @@ class Raw_Window(raw_import_ui.Ui_raw_import_window):
             highlightthickness = 0)
 
         self.ax = self.mycanvas.get_subplot(0,0)
-
-        self.ax.draw()
+        self.ax.draw()  
 
     def connect_methods(self):
         '''
@@ -106,13 +135,12 @@ class Raw_Window(raw_import_ui.Ui_raw_import_window):
         status: active
         ##############################################
         '''
-
         ##############################################
         #manage button clicks connect
+        self.io_button_scan.clicked.connect(self.scan_folder_in)
         self.file_button_accept.clicked.connect(self.process_files)
         #self.file_button_reset.clicked.connect(self.reset_list_files)
 
-        self.io_button_scan.clicked.connect(self.scan_folder_in)
         self.type_button_set.clicked.connect(self._set_dim)
 
         #set the ui for the folder select
@@ -150,110 +178,19 @@ class Raw_Window(raw_import_ui.Ui_raw_import_window):
         ]
 
         for element in list_elements:
+            
+            self.list_dicitonary[element[0]] = ListContainer(element[1])
 
-            self._build_container(element)
+            self.list_dicitonary[element[0]].build_container(
 
-    def _build_container(self, element):
-        '''
-        ##############################################
-        Creation of the coantiner for a specific list
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
-        #intiialize the dicitonary
-        dictionary = {}
+                check = element[2],
+                true  = element[3],
 
-        dictionary['name']  = element[0]
-        dictionary['view']  = element[1]
-        dictionary['model'] = QtGui.QStandardItemModel(element[1])
-        dictionary['items'] = []
-        dictionary['check'] = element[2]
-        dictionary['true']  = element[3]
-
-        if not element[4] == None:
-            dictionary['view'].clicked.connect(element[4])
-
-        if not element[5] == None:
-            dictionary['model'].itemChanged.connect(element[5])
-
-        #put it into the main dicitonary
-        self.list_dicitonary[element[0]] = dictionary
-
-        #finnally initialize the list
-        self.reset_list(element[0])
-
-    def reset_list(self, key):
-        '''
-        ##############################################
-        This method will reset the list
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
-        target = self.list_dicitonary[key]
-
-        target['view'].reset()
-        target['items'] = []
-        target['model'] = QtGui.QStandardItemModel(self.type_list_dimensions)
-        target['view'].setModel(target['model'])
-
-    def add_item_to_list(self, key, item):
-        '''
-        ##############################################
-        This method will handle the add item routine
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
-
-        #set the target list
-        target = self.list_dicitonary[key]
-
-        #add the element
-        target['items'].append([
-            QtGui.QStandardItem(item.split(os.path.sep)[-1]),
-            item])
-
-        target['items'][-1][0].setEditable(False)
-
-        #set chekc state
-        if target['check']:
-            target['items'][-1][0].setCheckable( True )
-
-            if target['true']:
-                target['items'][-1][0].setCheckState( QtCore.Qt.Checked )
-
-            else:
-                target['items'][-1][0].setCheckState( QtCore.Qt.Unchecked ) 
-
-        #out the element
-        target['model'].appendRow(target['items'][-1][0])
+                clicked     = element[4],
+                itemchanged = element[5])
 
     def open_folder_in(self):
-        '''
-        ##############################################
         
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
         #launch the ui for the folder selection
         self.io_handler.set_import_directory(
             QtWidgets.QFileDialog.getExistingDirectory(
@@ -264,17 +201,7 @@ class Raw_Window(raw_import_ui.Ui_raw_import_window):
         self.io_input_in.setText(self.io_handler.directory_path)
 
     def open_file_out(self):
-        '''
-        ##############################################
-        
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
+
         #launch the ui for the savefile selection
         self.io_handler.set_save_file(
             QtWidgets.QFileDialog.getSaveFileName(
@@ -306,9 +233,10 @@ class Raw_Window(raw_import_ui.Ui_raw_import_window):
 
         ##############################################
         #reset the elements
-        self.reset_list('file')
-        self.reset_list('type')
-        self.reset_list('dim')
+        self.list_dicitonary['file'].reset_list()
+        self.list_dicitonary['type'].reset_list()
+        self.list_dicitonary['dim'].reset_list()
+
         self.type_input_name.setText('')
         self.type_input_label.setText('')
         self.type_label_path.setText(self.io_handler.visual_string)
@@ -316,11 +244,9 @@ class Raw_Window(raw_import_ui.Ui_raw_import_window):
 
         ##############################################
         #repopulate all
-
-        #add all the text items and makes them checked as well and checkable
         for item in self.io_handler.scan_directory(): 
 
-            self.add_item_to_list('file', item)
+            self.list_dicitonary['file'].add_item_to_list(item)
 
         self.visual_combo_selector.addItems(
             [element.split(os.path.sep)[-1] for element in self.io_handler.file_list]
@@ -380,22 +306,21 @@ class Raw_Window(raw_import_ui.Ui_raw_import_window):
         '''
 
         #add all the text items and makes them checked as well and checkable
-        self.reset_list('type')
+        self.list_dicitonary['type'].reset_list()
 
         for item in self.io_handler.dimension_list: 
 
-            self.add_item_to_list('type', item[0])
+            self.list_dicitonary['type'].add_item_to_list(item[0])
 
         #set the select to the first row
-        self.list_dicitonary['type']['view'].setCurrentIndex(
-            self.list_dicitonary['type']['model'].index(0,0)
+        self.list_dicitonary['type'].dictionary['view'].setCurrentIndex(
+            self.list_dicitonary['type'].dictionary['model'].index(0,0)
         )
 
         try:
-            self._dimension_changed(self.list_dicitonary['type']['model'].index(0,0))
+            self._dimension_changed(self.list_dicitonary['type'].dictionary['model'].index(0,0))
         except:
             self._dimension_changed(None)
-
 
     def _dimension_changed(self, index):
         '''
@@ -411,14 +336,14 @@ class Raw_Window(raw_import_ui.Ui_raw_import_window):
         '''
         
         if index == None:
-            self.reset_list('dim')
+            self.list_dicitonary['type'].reset_list()
             self.type_input_name.setText('')
             self.type_input_label.setText('')
 
         else:
                 
             #toggle the ignore
-            if self.list_dicitonary['type']['model'].item(index.row()).checkState() == QtCore.Qt.Checked:
+            if self.list_dicitonary['type'].dictionary['model'].item(index.row()).checkState() == QtCore.Qt.Checked:
                 self.io_handler.dimension_list[index.row()][4] = True
 
             else:
@@ -435,11 +360,11 @@ class Raw_Window(raw_import_ui.Ui_raw_import_window):
             self.type_input_label.setText(self.io_handler.dimension_list[index.row()][1])
 
             #add all the text items and makes them checked as well and checkable
-            self.reset_list('dim')
+            self.list_dicitonary['dim'].reset_list()
             
             for item in self.io_handler.dimension_list[index.row()][-1]: 
 
-                self.add_item_to_list('dim', str(item))
+                self.list_dicitonary['dim'].add_item_to_list(str(item))
 
     def _file_changed(self, index):
         '''
@@ -453,9 +378,8 @@ class Raw_Window(raw_import_ui.Ui_raw_import_window):
         status: active
         ##############################################
         '''
-
         #toggle the ignore
-        if self.list_dicitonary['file']['model'].item(index.row()).checkState() == QtCore.Qt.Checked:
+        if self.list_dicitonary['file'].dictionary['model'].item(index.row()).checkState() == QtCore.Qt.Checked:
             check = True
 
         else:
@@ -467,13 +391,9 @@ class Raw_Window(raw_import_ui.Ui_raw_import_window):
             check)
 
         self.process_files()
-
         self.visual_combo_selector.clear()
-
         self.visual_combo_selector.addItems(
-            [element.split(os.path.sep)[-1] for element in self.io_handler.file_list]
-            )
-
+            [element.split(os.path.sep)[-1] for element in self.io_handler.file_list])
         self._plot_file(0)
 
     def _set_dim(self):
@@ -489,7 +409,7 @@ class Raw_Window(raw_import_ui.Ui_raw_import_window):
         ##############################################
         '''
         #grab the element that is selected
-        row = self.list_dicitonary['type']['view'].selectedIndexes()[0].row()
+        row = self.list_dicitonary['type'].dictionary['view'].selectedIndexes()[0].row()
         
         #get the parameters
         name = self.type_input_name.text()
@@ -499,11 +419,10 @@ class Raw_Window(raw_import_ui.Ui_raw_import_window):
         self.io_handler.set_dim_meta(row ,name = name, unit = unit)
 
         #refresh the views
-        self.list_dicitonary['type']['model'].item(row).setText(name)
+        self.list_dicitonary['type'].dictionary['model'].item(row).setText(name)
 
         #set the text
         self.type_label_path.setText(self.io_handler.visual_string)
-
 
     def _plot_file(self, index):
         '''
@@ -517,24 +436,19 @@ class Raw_Window(raw_import_ui.Ui_raw_import_window):
         status: active
         ##############################################
         '''
-
         x, y = self.io_handler.grab_data_from_file(index)
 
         self.ax.clear()
-
         self.ax.add_plot(
             'Scatter',
             x,
             y,
             Thickness = 3,
             Style   = ['-','o','5'])
-
         self.ax.redraw()
         
     def next_tab(self):
         pass
-
-
 
     def previous_tab(self):
         pass
@@ -542,8 +456,12 @@ class Raw_Window(raw_import_ui.Ui_raw_import_window):
 
 if __name__ == "__main__":
 
+    from ..io  import io_raw_import
+    from ..io  import io_data_import
+    from ..data import datastructure
+    
     #initialize an io_handler
-    handler = io_handler.IO_Raw_Handler()
+    handler = io_raw_import.IORawHandler()
     
     #set up the app
     app         = QtWidgets.QApplication(sys.argv)
@@ -558,4 +476,12 @@ if __name__ == "__main__":
     interface._process_export()
     window.show()
 
+    data = datastructure.Data_Structure()
+    handler_2 = io_data_import.IOImportHandler()
+    handler_2.readDataFile('/Users/alexanderschober/Dropbox/software/R-DATA/Demo/test.txt', data)
+
+
+
     sys.exit(app.exec_())
+
+

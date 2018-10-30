@@ -17,12 +17,12 @@
 # 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # Module authors:
-#   Alexander Schober <alexander.schober@mac.com>
+#   Alexander Schober <alex.schober@mac.com>
 #
 # *****************************************************************************
 
 #############################
-#personal libraroes
+#personal libraries
 from .points import Point
 from .transformations import *
 from .operations import normal
@@ -50,6 +50,7 @@ class Surface:
         ##############################################
         '''
         self.identifier_type = 'Surface'
+        self.type_name      = kwargs['name']
         self.generated      = False
         self.points         = []
         self.vertexes       = []
@@ -57,8 +58,8 @@ class Surface:
         self.topography     = None
         self.border_points  = []
 
-        self.resolution_x = 1
-        self.resolution_y = 1
+        self.resolution_x = 10
+        self.resolution_y = 10
 
         #process kwargs
         if 'color' in kwargs.keys():
@@ -114,7 +115,6 @@ class Surface:
         status: active
         ##############################################
         '''
-        
         return self.faces
 
     def applyTransformation(self, transformation):
@@ -321,7 +321,6 @@ class QuadSurface(Surface):
         #retrace the points with the topography
         self.trace()
 
-    
     def applyTopography(self):
         '''
         ##############################################
@@ -342,6 +341,26 @@ class QuadSurface(Surface):
                 translate = Translation(self.normal_vector * self.topography[j][i])
 
                 translate.apply([self.points[j * (self.resolution_y + 1) + i]]) 
+
+
+class Disk(QuadSurface):
+    
+    def __init__(self, dimension = 1, **kwargs):
+        '''
+        ##############################################
+        This is a wrapper class that will indeed 
+        call the parent class made up of Quadsurface
+        that inherits from surfaces.    
+        ———————
+        Input: -
+        ———————
+        Output: -
+        ———————
+        status: active
+        ##############################################
+        '''
+        QuadSurface.__init__(self, height = dimension, width = dimension, **kwargs)
+        self.type_name = 'Disk'
 
 
 
@@ -402,53 +421,53 @@ class TriSurface(Surface):
         Surface.__init__(self)
         self.type_name = 'TriSurface'
 
-class CylSurface(Surface):
+# class CylSurface(Surface):
 
-    def __init__(self):
-        '''
-        ##############################################
+#     def __init__(self):
+#         '''
+#         ##############################################
         
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
-        Surface.__init__(self)
-        self.type_name = 'CylSurface'
+#         ———————
+#         Input: -
+#         ———————
+#         Output: -
+#         ———————
+#         status: active
+#         ##############################################
+#         '''
+#         Surface.__init__(self)
+#         self.type_name = 'CylSurface'
 
-class SphereSurface(Surface):
+# class SphereSurface(Surface):
 
-    def __init__(self):
-        '''
-        ##############################################
+#     def __init__(self):
+#         '''
+#         ##############################################
         
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
-        Surface.__init__(self)
-        self.type_name = 'SphereSurface'
+#         ———————
+#         Input: -
+#         ———————
+#         Output: -
+#         ———————
+#         status: active
+#         ##############################################
+#         '''
+#         Surface.__init__(self)
+#         self.type_name = 'SphereSurface'
 
-class ConeSurface(Surface):
+# class ConeSurface(Surface):
 
-    def __init__(self):
-        '''
-        ##############################################
+#     def __init__(self):
+#         '''
+#         ##############################################
         
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
-        Surface.__init__(self)
-        self.type_name = 'ConeSurface'
+#         ———————
+#         Input: -
+#         ———————
+#         Output: -
+#         ———————
+#         status: active
+#         ##############################################
+#         '''
+#         Surface.__init__(self)
+#         self.type_name = 'ConeSurface'

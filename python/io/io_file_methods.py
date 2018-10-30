@@ -17,7 +17,7 @@
 # 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # Module authors:
-#   Alexander Schober <alexander.schober@mac.com>
+#   Alexander Schober <alex.schober@mac.com>
 #
 # *****************************************************************************
 
@@ -25,8 +25,6 @@
 import sys
 import os
 import glob
-
-
 
 def get_files_in_folder(path, extension = None):
     '''

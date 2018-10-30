@@ -17,54 +17,43 @@
 # 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # Module authors:
-#   Alexander Schober <alexander.schober@mac.com>
+#   Alexander Schober <alex.schober@mac.com>
 #
 # *****************************************************************************
 
+#############################
+#personal libraries
+
+
+#############################
+#mathematic libraries
 import numpy as np
-import scipy.linalg as sci_lin
 
-class Rotation:
+
+
+class Instrument():
     
-    def __init__(self, axis, angle, origin = [0,0,0]):
+    def __init__(self, **kwargs):
         '''
         ##############################################
-        This class we be initialised and setup to 
-        allow the rotation of elements. 
+        This is the main intrument class the will 
+        manage general instrument logic, such as
+        position, orientation.
         ———————
-        Input: 
-        - axis ([float x 3]) rotation axis
-        - angle (float) angle in degrees
-        - origin ([float x 3]) rotation axis origin
+        Input: -
         ———————
         Output: -
         ———————
         status: active
         ##############################################
         '''
-        self.axis   = axis
-        self.origin = origin
-        self.angle  = np.pi * angle / 180.
+        self.initialize()
 
-        #set up the rotations
-        self.rotation_m  =  sci_lin.expm(
-            np.cross(np.eye(3), self.axis/sci_lin.norm(self.axis)
-            * self.angle))
-
-        #set up the translations
-        self.t      = np.zeros((3,4))
-        self.t_t    = np.zeros((3,4))
-
-        np.fill_diagonal(self.t,1)
-        np.fill_diagonal(self.t_t,1)
-
-        self.t[0:3,3] = - np.asarray(origin)[:]
-        self.t_t[0:3,3] = + np.asarray(origin)[:]
-
-    def apply(self, points):
+    def reset(self):
         '''
         ##############################################
-        rotate the passed point element. 
+        In this class we will reset all the intruments
+        parameter and then set them.
         ———————
         Input: -
         ———————
@@ -74,85 +63,14 @@ class Rotation:
         ##############################################
         '''
 
-        for point in points:
+        #finnally initialize
+        self.initialize()
 
-            coordinates = [point.x_abs, point.y_abs, point.z_abs]
-
-            result = np.dot(
-                self.t_t,
-                list(np.dot(
-                    self.rotation_m,
-                    np.dot(
-                        self.t,
-                        coordinates+[1])
-                    )
-                )
-                +[1])
-            point.setAbsolutePosition(*list(result))
-
-class Translation:
-    
-    def __init__(self, vector):
+    def initialize(self):
         '''
         ##############################################
-        This class we be initialised and setup to 
-        allow the translation of elements. 
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
-        self.vector     = vector
-
-        self.t          = np.zeros((3,4))
-        np.fill_diagonal(self.t,1)
-        self.t[0:3,3]   = np.asarray(self.vector)[:]
-        
-    def apply(self, points):
-        '''
-        ##############################################
-        translate the passed point element. 
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
-
-        for point in points:
-
-            coordinates = [point.x_abs, point.y_abs, point.z_abs]
-
-            result = np.dot(self.t, coordinates+[1])
-
-            point.setAbsolutePosition(*list(result))
-
-class Move:
-    
-    def __init__(self, axis):
-        '''
-        ##############################################
-        This class we be initialised and setup to 
-        allow the translation of elements. 
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
-        pass
-        
-    def apply(self, point):
-        '''
-        ##############################################
-        translate the passed point element. 
+        In this class we will reset all the intruments
+        parameter and then set them.
         ———————
         Input: -
         ———————
@@ -163,3 +81,51 @@ class Move:
         '''
         pass
 
+    def addGeometry(self):
+        '''
+        ##############################################
+        In this class we will reset all the intruments
+        parameter and then set them.
+        ———————
+        Input: -
+        ———————
+        Output: -
+        ———————
+        status: active
+        ##############################################
+        '''
+        pass
+
+    
+    def removeGeometry(self):
+        '''
+        ##############################################
+        In this class we will reset all the intruments
+        parameter and then set them.
+        ———————
+        Input: -
+        ———————
+        Output: -
+        ———————
+        status: active
+        ##############################################
+        '''
+        pass
+
+class RamanSpectrometer(Instrument):
+    
+    def __init__(self, **kwargs):
+        '''
+        ##############################################
+        This class will mange all the physical proper-
+        ties of a sample. This can be surface, volume
+        or tensor properties. 
+        ———————
+        Input: -
+        ———————
+        Output: -
+        ———————
+        status: active
+        ##############################################
+        '''
+        Instrument.__init__(self)

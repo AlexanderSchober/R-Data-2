@@ -17,11 +17,24 @@
 # 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # Module authors:
-#   Alexander Schober <alexander.schober@mac.com>
+#   Alexander Schober <alex.schober@mac.com>
 #
 # *****************************************************************************
 
 
-from .points import Point
-from .lines import Line
-import numpy as np
+def slab(meas):
+
+    
+    meas.setSample()
+
+    Sample_1 = meas.sample.newElement(
+        'Sample_1', 
+        volume  = "Cuboid",
+        a       = 3.,
+        b       = 3.,
+        c       = 3.,
+        color   = np.asarray([255,0, 0,1]),#colors.map(0.4),
+        transp  = 1)
+    Sample_1.geometry.buildVolume()
+    Sample_1.translate([-1.5,-1.5,3.3])
+    Sample_1.rotate([0,0,1], 45)

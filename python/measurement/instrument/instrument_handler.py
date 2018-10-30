@@ -17,16 +17,26 @@
 # 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # Module authors:
-#   Alexander Schober <alexander.schober@mac.com>
+#   Alexander Schober <alex.schober@mac.com>
 #
 # *****************************************************************************
 
-class Line:
+#############################
+#personal libraries
+from ..geometry.geometry import Geometry
 
-    def __init__(self):
+#############################
+#mathematic libraries
+import numpy as np
+
+class InstrumentHandler():
+
+    def __init__(self, **kwargs):
         '''
         ##############################################
-        
+        This is the main intrument class the will 
+        manage general instrument logic, such as
+        position, orientation.
         ———————
         Input: -
         ———————
@@ -36,3 +46,22 @@ class Line:
         ##############################################
         '''
         pass
+
+    def generateScript(self, indentation = 0, parent = ""):
+        '''
+        ##############################################
+        This method will allow the generation of a 
+        script of the current structure.
+        ———————
+        Input (optional): -
+        ———————
+        Output: -
+        ———————
+        status: active
+        ##############################################
+        '''
+        indent = "    "
+        output = indentation * indent + "\n"
+
+
+        return output

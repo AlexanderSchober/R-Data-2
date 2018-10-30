@@ -17,28 +17,16 @@
 # 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # Module authors:
-#   Alexander Schober <alexander.schober@mac.com>
+#   Alexander Schober <alex.schober@mac.com>
 #
 # *****************************************************************************
 
-from .sample_object     import SampleObject
-from .geometry.environment       import Environment
-
-class SampleHandler:
+class Environment:
 
     def __init__(self):
         '''
         ##############################################
-        The sample manager is a standalone package
-        that can be used to generate sample structure.
-        This goes for physical properties as much as
-        form and shape. The sample will be built of
-        subset of samples which can be brought together
-        through a smart geometry manager. 
-
-        This procedure should also allow easier
-        management of the simulation of Raman 
-        experiments.
+        
         ———————
         Input: -
         ———————
@@ -48,33 +36,5 @@ class SampleHandler:
         ##############################################
         '''
         
-        self.samples = {}
-        
-    def newSample(self, name = None):
-        '''
-        ##############################################
-        add 
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
-
-        if name == None:
-
-            name = "sample_"+len(self.samples.keys())
-
-        self.samples[name] = SampleObject()
-        
-
-
-if __name__ == "__main__":
-    
-    handler = SampleObject(name = 'Sample_object') 
-    #handler.newSample('hey')
-
-    print(handler.name)
-
+        self.position       = [0,0,0]
+        self.orientation    = [0,0,0]

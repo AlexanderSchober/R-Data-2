@@ -17,37 +17,20 @@
 # 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # Module authors:
-#   Alexander Schober <alexander.schober@mac.com>
+#   Alexander Schober <alex.schober@mac.com>
 #
 # *****************************************************************************
 
-#######################################
-#basic imports
 
-#system import
-import sys
-
-#operating system variables
-import os
-
-#numpyy mathematical import
-import numpy
-
-#Date and time import
-import datetime
-
-#function manipulation routines
-from functools import partial
-
-#######################################
-#gui imports
-import gui.window_handlers as Window_Handlers
-from gui.main_window import Main_Window
+from .gui.window_handlers import MainWindowHandler
+from .environment import EnvironmentHandler
 
 class Main:
     '''
     ##############################################
-    This class will manage the 
+    This class is the root class in our system.
+    It will just launch the instances and then
+    manage them accordingly. 
     ———————
     Input: -
     ———————
@@ -58,17 +41,66 @@ class Main:
     '''
     def __init__(self):
 
+        self.initCore()
+        self.initGUI()
 
-        #initalize the window manager
-        self.window_handler = Window_Handlers.Main_Window_Handler(self)
-    
-        #initialize the specific class
-        self.main_window = Main_Window(self.window_handler, self)
+    def initCore(self):
+        '''
+        ##############################################
         
-        #initialize
-        self.window_handler.initialize(self.main_window)
-                                
-        #Set the manager to start runing Tkinter backend
-        self.window_handler.run()
+        ———————
+        Input: -
+        ———————
+        Output: -
+        ———————
+        status: active
+        ##############################################
+        '''
+        self.env_hanler = EnvironmentHandler()
 
+    def initGUI(self):
+        '''
+        ##############################################
+        
+        ———————
+        Input: -
+        ———————
+        Output: -
+        ———————
+        status: active
+        ##############################################
+        '''
+        self.window_handler = MainWindowHandler(self)
+        
+
+
+if __name__ == "__main__":
+
+    
+    
+
+
+    #initialize an io_handler
+    handler = io_raw_import.IORawHandler()
+    
+    #set up the app
+    app         = QtWidgets.QApplication(sys.argv)
+    window      = QtWidgets.QMainWindow()
+    interface   = Raw_Window(window, handler)
+
+    #fast input for debugging
+    interface.io_input_in.setText('/Users/alexanderschober/Dropbox/software/R-DATA/Demo/DemoRawImport')
+    interface.io_input_out.setText('/Users/alexanderschober/Dropbox/software/R-DATA/Demo/test.txt')
+    interface.scan_folder_in()
+    interface.process_files()
+    interface._process_export()
+    window.show()
+
+    data = datastructure.Data_Structure()
+    handler_2 = io_data_import.IOImportHandler()
+    handler_2.readDataFile('/Users/alexanderschober/Dropbox/software/R-DATA/Demo/test.txt', data)
+
+
+
+    sys.exit(app.exec_())
 

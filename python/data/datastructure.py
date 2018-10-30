@@ -17,7 +17,7 @@
 # 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # Module authors:
-#   Alexander Schober <alexander.schober@mac.com>
+#   Alexander Schober <alex.schober@mac.com>
 #
 # *****************************************************************************
 
@@ -2054,7 +2054,6 @@ class Axes:
                 j for j in range(len(self.idx[i]))
             ] 
             for i in range(self.dim)]
-
 
         ##############################################
         #grab the ophaned indices

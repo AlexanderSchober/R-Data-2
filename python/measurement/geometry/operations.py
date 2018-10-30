@@ -17,7 +17,7 @@
 # 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # Module authors:
-#   Alexander Schober <alexander.schober@mac.com>
+#   Alexander Schober <alex.schober@mac.com>
 #
 # *****************************************************************************
 
@@ -77,13 +77,20 @@ def angle(point_0, point_1, point_2, degrees = True):
         vec_0 = point_1 - point_0
         vec_1 = point_2 - point_0
 
-    #calculate the angle
-    angle_cos = (
-        np.dot(vec_0,vec_1) 
-        / distance(point_0, point_1) 
-        / distance(point_0, point_2) )
+    d_0 = distance(point_0, point_1)
+    d_1 = distance(point_0, point_2)
 
-    angle = np.arccos(np.clip(angle_cos, -1, 1)) 
+    if d_0 == 0 or d_1 ==0 :
+        angle = 0
+        
+    else:
+        #calculate the angle
+        angle_cos = (
+            np.dot(
+                vec_0 / distance(point_0, point_1),
+                vec_1 / distance(point_0, point_2)))
+
+        angle = np.arccos(np.clip(angle_cos, -1, 1)) 
 
     #return degrees if necessqyr
     if degrees:
