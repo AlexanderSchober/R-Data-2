@@ -33,7 +33,7 @@ from ..gui.python_syntax    import PythonHighlighter
 from simpleplot.multi_canvas import Multi_Canvas
 
 
-class Raw_Window(Ui_raw_import_window):
+class RawWindow(Ui_raw_import_window):
     '''
     ##############################################
     This class will manage the raw import 
@@ -48,14 +48,13 @@ class Raw_Window(Ui_raw_import_window):
     status: active
     ##############################################
     '''
-    def __init__(self, window, io_handler):
+    def __init__(self, window):
 
         ##############################################
         #Local pointers
         Ui_raw_import_window.__init__(self)
 
-        self.io_handler = io_handler
-        self.io_handler.init_raw_import()
+        self.io_handler = None
     
         ##############################################
         #Local pointers
@@ -64,6 +63,10 @@ class Raw_Window(Ui_raw_import_window):
         self.connect_methods()
         self._build_list_containers()
         self._initate_graph()
+
+    def linkCore(self, io_handler):
+        self.io_handler = io_handler
+        self.io_handler.init_raw_import()
         self._set_meas()
 
     def _set_meas(self):
@@ -466,7 +469,7 @@ if __name__ == "__main__":
     #set up the app
     app         = QtWidgets.QApplication(sys.argv)
     window      = QtWidgets.QMainWindow()
-    interface   = Raw_Window(window, handler)
+    interface   = RawWindow(window, handler)
 
     #fast input for debugging
     interface.io_input_in.setText('/Users/alexanderschober/Dropbox/software/R-DATA/Demo/DemoRawImport')

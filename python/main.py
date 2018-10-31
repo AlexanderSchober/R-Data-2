@@ -22,7 +22,7 @@
 # *****************************************************************************
 
 
-from .gui.window_handlers import MainWindowHandler
+from .gui.window_handlers import WindowHandler
 from .environment import EnvironmentHandler
 
 class Main:
@@ -40,67 +40,55 @@ class Main:
     ##############################################
     '''
     def __init__(self):
-
         self.initCore()
         self.initGUI()
 
     def initCore(self):
-        '''
-        ##############################################
-        
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
         self.env_hanler = EnvironmentHandler()
 
     def initGUI(self):
-        '''
-        ##############################################
-        
-        ———————
-        Input: -
-        ———————
-        Output: -
-        ———————
-        status: active
-        ##############################################
-        '''
-        self.window_handler = MainWindowHandler(self)
+        self.window_handler = WindowHandler()
+
+    def addEnv(self, name = 'No Name'):
+        self.env_hanler.addEnv(name = name)
+
+    def launchRawImport(self):
+        self.env_hanler.current_env.io.setupRawImporter()
+        self.window_handler.newWindow('RawImport')
+        self.window_handler.active_windows[-1].target.linkCore(
+            self.env_hanler.current_env.io.target)
         
 
 
 if __name__ == "__main__":
 
+    manager = Main()
+    manager.addEnv()
+    manager.launchRawImport()
+    manager.window_handler.run()
+
     
+    # #initialize an io_handler
+    # handler = io_raw_import.IORawHandler()
     
+    # #set up the app
+    # app         = QtWidgets.QApplication(sys.argv)
+    # window      = QtWidgets.QMainWindow()
+    # interface   = Raw_Window(window, handler)
 
+    # #fast input for debugging
+    # interface.io_input_in.setText('/Users/alexanderschober/Dropbox/software/R-DATA/Demo/DemoRawImport')
+    # interface.io_input_out.setText('/Users/alexanderschober/Dropbox/software/R-DATA/Demo/test.txt')
+    # interface.scan_folder_in()
+    # interface.process_files()
+    # interface._process_export()
+    # window.show()
 
-    #initialize an io_handler
-    handler = io_raw_import.IORawHandler()
-    
-    #set up the app
-    app         = QtWidgets.QApplication(sys.argv)
-    window      = QtWidgets.QMainWindow()
-    interface   = Raw_Window(window, handler)
-
-    #fast input for debugging
-    interface.io_input_in.setText('/Users/alexanderschober/Dropbox/software/R-DATA/Demo/DemoRawImport')
-    interface.io_input_out.setText('/Users/alexanderschober/Dropbox/software/R-DATA/Demo/test.txt')
-    interface.scan_folder_in()
-    interface.process_files()
-    interface._process_export()
-    window.show()
-
-    data = datastructure.Data_Structure()
-    handler_2 = io_data_import.IOImportHandler()
-    handler_2.readDataFile('/Users/alexanderschober/Dropbox/software/R-DATA/Demo/test.txt', data)
+    # data = datastructure.Data_Structure()
+    # handler_2 = io_data_import.IOImportHandler()
+    # handler_2.readDataFile('/Users/alexanderschober/Dropbox/software/R-DATA/Demo/test.txt', data)
 
 
 
-    sys.exit(app.exec_())
+    # sys.exit(app.exec_())
 

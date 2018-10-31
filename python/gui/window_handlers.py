@@ -1,8 +1,9 @@
 import sys
 from PyQt5 import QtGui, QtCore
 
+from .raw_import_window import RawWindow
 
-class MainWindowHandler:
+class WindowHandler:
     '''
     ##############################################
     Initializer of the class, It will immediately call
@@ -22,21 +23,19 @@ class MainWindowHandler:
     ##############################################
     '''
 
-    def __init__(self, Initializer_Class):
-        
-        #Link the topmost managing class
-        self.Initializer_Class = Initializer_Class
-        
-        #Create the Manager Pointer List
-        self.Managers   = []
+    def __init__(self):
+        self.app = QtGui.QApplication(sys.argv)
+        self.window_dictionary = {}
+        self.window_dictionary['RawImport'] = RawWindow
+        self.active_windows = []
 
+        self.main_window = MainWindow()
+        self.main_window.show()
 
-    def initialize(self, build_class):
+    def newWindow(self, name):
         '''
         ##############################################
-        Initialize the application environement by 
-        setting the the app and then setting its 
-        variables. 
+        
         ———————
         Input: -
         ———————
@@ -45,5 +44,41 @@ class MainWindowHandler:
         status: active
         ##############################################
         '''
-        self.app = QtGui.QApplication(sys.argv)
+        if name in self.window_dictionary.keys():
+            self.active_windows.append(ChildWindow(
+                self.main_window,
+                self.window_dictionary[name]
+            ))
+            self.active_windows[-1].show()
+        
+    def run(self):
+        '''
+        ##############################################
 
+        ———————
+        Input: -
+        ———————
+        Output: -
+        ———————
+        status: active
+        ##############################################
+        '''
+        sys.exit(self.app.exec_())
+
+
+class MainWindow(QtGui.QMainWindow):
+    def __init__(self, parent = None):
+        super(MainWindow, self).__init__(parent)
+
+class ChildWindow(QtGui.QMainWindow):
+    def __init__(self, parent, target):
+
+        #set the inheritance 
+        super(ChildWindow, self).__init__(parent)
+
+        #are we linked
+        self.linked = False
+
+        #set the gui
+        self.target = target(self)
+        
