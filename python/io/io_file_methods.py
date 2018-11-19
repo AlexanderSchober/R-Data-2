@@ -140,3 +140,73 @@ def substring_in_list(substring, path_list):
 
     return True
 
+
+
+def getRuntimeDir(Parent = False):
+    '''
+    ############################################################
+    This function is here to build system invariant paths able 
+    to load text files containing viable runtime info this 
+    includes files like IO text files etc.
+    
+    Ata later stage we would like to build a user specific runtime.
+    This would allow multiple users to use the runtime.
+    ############################################################
+    '''
+    
+    #check if windows
+    if isWindows():# or IsLinux():
+        
+        if not Parent:
+            RunPath = os.path.dirname(
+                os.path.abspath(__file__)).split(os.path.sep)[:-2]
+            RunPath = os.path.join(*RunPath)
+            RunPath = RunPath.split(':')
+            RunPath = os.path.join(RunPath[0],os.path.sep, os.path.sep, *RunPath[1:])
+
+        else:
+            RunPath = os.path.dirname(
+                os.path.abspath(__file__)).split(os.path.sep)[:-2]
+            RunPath = os.path.join(*RunPath)
+            RunPath = RunPath.split(':')
+            RunPath = os.path.join(RunPath[0],os.path.sep, os.path.sep, *RunPath[1:])
+
+    elif isLinux():
+        if not Parent:
+            RunPath = os.path.dirname(
+                os.path.abspath(__file__)).split(os.path.sep)[:-2]
+            RunPath = os.path.join(os.path.sep,*RunPath)
+
+        else:
+            RunPath = os.path.dirname(
+                os.path.abspath(__file__)).split(os.path.sep)[:-2]
+            RunPath = os.path.join(os.path.sep,*RunPath)
+
+    else:
+        if not Parent:
+            RunPath = os.path.dirname(
+                os.path.abspath(__file__)).split(os.path.sep)[:-2]
+            RunPath = os.path.join(os.path.sep,*RunPath)
+
+        else:
+            RunPath = os.path.dirname(
+                os.path.abspath(__file__)).split(os.path.sep)[:-2]
+            RunPath = os.path.join(os.path.sep,*RunPath)
+
+    return RunPath
+
+def isWindows():
+    
+    if os.name == 'nt':
+        return True
+    
+    else:
+        return False
+
+def isLinux():
+    
+    if os.name == 'posix' and not sys.platform == 'darwin':
+        return True
+    
+    else:
+        return False

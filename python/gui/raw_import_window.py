@@ -33,7 +33,7 @@ from ..gui.python_syntax    import PythonHighlighter
 from simpleplot.multi_canvas import Multi_Canvas
 
 
-class RawWindow(Ui_raw_import_window):
+class RawWindowLayout(Ui_raw_import_window):
     '''
     ##############################################
     This class will manage the raw import 
@@ -185,10 +185,8 @@ class RawWindow(Ui_raw_import_window):
             self.list_dicitonary[element[0]] = ListContainer(element[1])
 
             self.list_dicitonary[element[0]].build_container(
-
-                check = element[2],
-                true  = element[3],
-
+                check       = element[2],
+                true        = element[3],
                 clicked     = element[4],
                 itemchanged = element[5])
 
@@ -458,33 +456,34 @@ class RawWindow(Ui_raw_import_window):
 
 
 if __name__ == "__main__":
+    pass
 
-    from ..io  import io_raw_import
-    from ..io  import io_data_import
-    from ..data import datastructure
+    # from ..io  import io_raw_import
+    # from ..io  import io_data_import
+    # from ..data import datastructure
     
-    #initialize an io_handler
-    handler = io_raw_import.IORawHandler()
+    # #initialize an io_handler
+    # handler = io_raw_import.IORawHandler()
     
-    #set up the app
-    app         = QtWidgets.QApplication(sys.argv)
-    window      = QtWidgets.QMainWindow()
-    interface   = RawWindow(window, handler)
+    # #set up the app
+    # app         = QtWidgets.QApplication(sys.argv)
+    # window      = QtWidgets.QMainWindow()
+    # interface   = RawWindow(window, handler)
 
-    #fast input for debugging
-    interface.io_input_in.setText('/Users/alexanderschober/Dropbox/software/R-DATA/Demo/DemoRawImport')
-    interface.io_input_out.setText('/Users/alexanderschober/Dropbox/software/R-DATA/Demo/test.txt')
-    interface.scan_folder_in()
-    interface.process_files()
-    interface._process_export()
-    window.show()
+    # #fast input for debugging
+    # interface.io_input_in.setText('/Users/alexanderschober/Dropbox/software/R-DATA/Demo/DemoRawImport')
+    # interface.io_input_out.setText('/Users/alexanderschober/Dropbox/software/R-DATA/Demo/test.txt')
+    # interface.scan_folder_in()
+    # interface.process_files()
+    # interface._process_export()
+    # window.show()
 
-    data = datastructure.Data_Structure()
-    handler_2 = io_data_import.IOImportHandler()
-    handler_2.readDataFile('/Users/alexanderschober/Dropbox/software/R-DATA/Demo/test.txt', data)
+    # data = datastructure.Data_Structure()
+    # handler_2 = io_data_import.IOImportHandler()
+    # handler_2.readDataFile('/Users/alexanderschober/Dropbox/software/R-DATA/Demo/test.txt', data)
 
 
 
-    sys.exit(app.exec_())
+    # sys.exit(app.exec_())
 
 

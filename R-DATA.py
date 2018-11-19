@@ -28,8 +28,9 @@ import traceback
 try:
     
     if __name__ == "__main__":
-        from main import Main 
+        from python.main import Main 
         app = Main()
+        
 
     else:
         print('Launching Child Instance...')

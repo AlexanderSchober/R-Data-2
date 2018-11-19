@@ -42,6 +42,9 @@ class Main:
     def __init__(self):
         self.initCore()
         self.initGUI()
+        self.connectAll()
+
+        self.window_handler.run()
 
     def initCore(self):
         self.env_hanler = EnvironmentHandler()
@@ -49,13 +52,18 @@ class Main:
     def initGUI(self):
         self.window_handler = WindowHandler()
 
+    def connectAll(self):
+        target = self.window_handler.main_window.target
+        target.actionNew_environment.triggered.connect(self.addEnv)
+        target.actionConvert_dataset.triggered.connect(self.launchRawImport)
+
     def addEnv(self, name = 'No Name'):
         self.env_hanler.addEnv(name = name)
 
     def launchRawImport(self):
         self.env_hanler.current_env.io.setupRawImporter()
         self.window_handler.newWindow('RawImport')
-        self.window_handler.active_windows[-1].target.linkCore(
+        self.window_handler.active_windows['RawImport'].target.linkCore(
             self.env_hanler.current_env.io.target)
         
 
