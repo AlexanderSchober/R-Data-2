@@ -1,8 +1,9 @@
 import sys
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 
 from .raw_import_window import RawWindowLayout
 from .main_window import MainWindowLayout
+from ..gui_qt import images_rcc
 
 class WindowHandler:
     '''
@@ -13,7 +14,7 @@ class WindowHandler:
     contains the holder frame.
     
     The manager will also create root of the bat. 
-    Tkinter build tge windows with dependance and
+    Tkinter build the windows with dependance and
     root needs to be initialised from the start. 
     ———————
     Input: -
@@ -24,17 +25,19 @@ class WindowHandler:
     ##############################################
     '''
 
-    def __init__(self):
+    def __init__(self, link):
         self.app = QtGui.QApplication(sys.argv)
         self.window_dictionary = {}
         self.window_dictionary['MainWindow']    = MainWindowLayout
         self.window_dictionary['RawImport']     = RawWindowLayout
         self.active_windows = {}
 
-        self.main_window = MainWindow()
+        self.main_window = MainWindow(self)
         self.main_window.show()
         self.active_windows['MainWindow'] = self.main_window
+        self.active_windows['MainWindow'].target.link(link)
         self.main_window.show()
+
 
     def newWindow(self, name):
         '''
@@ -70,13 +73,12 @@ class WindowHandler:
         '''
         sys.exit(self.app.exec_())
 
-
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
     '''
     ##############################################
     This class is the main window that will be 
     used as a window base. All other windows will
-    be childre.
+    be children.
     ———————
     Input: -
     ———————
@@ -85,18 +87,18 @@ class MainWindow(QtGui.QMainWindow):
     status: active
     ##############################################
     '''
-    def __init__(self, parent = None):
+    def __init__(self, window_manager, parent = None):
         super(MainWindow, self).__init__(parent)
 
-        self.target = MainWindowLayout(self)
+        self.target = MainWindowLayout(self, window_manager)
 
-class ChildWindow(QtGui.QMainWindow):
+class ChildWindow(QtWidgets.QMainWindow):
     '''
     ##############################################
-    This class will luanch and generate the child
+    This class will launch and generate the child
     windows. Note that this is simply a wrapper
     that will then call the target class defining
-    the arragement. 
+    the arrangement. 
     ———————
     Input: -
     ———————
@@ -105,14 +107,12 @@ class ChildWindow(QtGui.QMainWindow):
     status: active
     ##############################################
     '''
-    def __init__(self, parent, target):
+    def __init__(self, parent, target, window_manager):
 
         #set the inheritance 
-        super(ChildWindow, self).__init__(parent)
-
-        #are we linked
-        self.linked = False
+        super(ChildWindow, self).__init__(parent = parent)
 
         #set the gui
-        self.target = target(self)
-        
+        self.parent = parent
+        self.target = target(self, window_manager)
+

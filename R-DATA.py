@@ -24,7 +24,7 @@
 import sys
 import traceback
 
-#we will try to luanch the app and send out the crash report in case it fails
+#we will try to launch the app and send out the crash report in case it fails
 try:
     
     if __name__ == "__main__":

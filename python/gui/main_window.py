@@ -23,55 +23,138 @@
 
 
 from PyQt5 import QtWidgets, QtGui, QtCore
-import sys
-import os
-from scipy.ndimage import imread
 
-from ..gui_qt.main_window_ui import Ui_main_import_window 
-from ..io.io_file_methods import getRuntimeDir
+from ..gui_qt.main_window_ui import Ui_RData 
 
 
-class MainWindowLayout(Ui_main_import_window):
+class MainWindowLayout(Ui_RData):
     '''
-    ##############################################
     This is the main window element that will later
     be the item managin the rest of the system. 
     Note that at a later point we will feature
     drag and drop onto this window.
-    ———————
-    Input: -
-    ———————
-    Output: -
-    ———————
-    status: active
-    ##############################################
     '''
-    def __init__(self, window):
+    def __init__(self, window, window_manager):
 
         #set up the window
-        Ui_main_import_window.__init__(self)
+        Ui_RData.__init__(self)
         self.window = window
+        self.window_manager = window_manager
         self.setupUi(window)
+        self.initialize()
+        self.connect()
+        # self.revertAllButtons()
+        # self.selectButton(0)
+        # self.hideActivity()
 
-        #set up the image in the QLabel
-        #self.main_label_image.
-        print(getRuntimeDir())
-        image = imread(os.path.join(
-            getRuntimeDir(),
-            'visual_ressources', 
-            'R-Data_Logo.jpeg'))
-        height, width, channels = image.shape
-        bytesPerLine    = channels * width
+    def connect(self):
+        '''
+        connect the actions to their respective buttons
+        '''
 
-        q_image         = QtGui.QImage(
-            image.data, 
-            width, height, 
-            bytesPerLine, 
-            QtGui.QImage.Format_RGB888)
+        # #button actions
+        # self.env_button.clicked.connect(self.refreshChecked)
+        # self.data_button.clicked.connect(self.refreshChecked)
+        # self.script_button.clicked.connect(self.refreshChecked)
+        # self.save_button.clicked.connect(self.refreshChecked)
 
-        pixmap01        = QtGui.QPixmap.fromImage(q_image)
-        pixmap_image    = QtGui.QPixmap(pixmap01)  
-        #pixmap_image    = pixmap_image.scaledToHeight(200)
-        self.main_label_image.setPixmap(pixmap_image)
+        # #Menu actions
+        # self.actionAddEnv.triggered.connect(
+        #     partial(self.actionDispatcher, 0, self.widgetClasses[0].addEnvironment))
+        # self.actionRemoveEnv.triggered.connect(
+        #     partial(self.actionDispatcher, 0, self.widgetClasses[0].deleteEnvironment))
 
+        # self.actionAdd_element.triggered.connect(
+        #     partial(self.actionDispatcher, 1, self.widgetClasses[1].addElement))
+        # self.actionRemove_element.triggered.connect(
+        #     partial(self.actionDispatcher, 1, self.widgetClasses[1].removeElement))
+        # self.actionGenerate.triggered.connect(
+        #     partial(self.actionDispatcher, 1, self.widgetClasses[1].generateDataset))
+        # self.actionSave_to_file.triggered.connect(
+        #     partial(self.actionDispatcher, 1, self.widgetClasses[1].save))
+        # self.actionLoad_from_file.triggered.connect(
+        #     partial(self.actionDispatcher, 1, self.widgetClasses[1].load))
 
+        # self.actionSaveScript.triggered.connect(
+        #     partial(self.actionDispatcher, 2, self.widgetClasses[2].saveScripts))
+        # self.actionLoadScript.triggered.connect(
+        #     partial(self.actionDispatcher, 2, self.widgetClasses[2].loadScripts))
+        # self.actionImport.triggered.connect(
+        #     partial(self.actionDispatcher, 2, partial(self.widgetClasses[2].run,0)))
+        # self.actionPhase.triggered.connect(
+        #     partial(self.actionDispatcher, 2, partial(self.widgetClasses[2].run,1)))
+        # self.actionReduction.triggered.connect(
+        #     partial(self.actionDispatcher, 2, partial(self.widgetClasses[2].run,2)))
+        # self.actionVisual.triggered.connect(
+        #     partial(self.actionDispatcher, 2, partial(self.widgetClasses[2].run,3)))
+        # self.actionAll.triggered.connect(
+        #     partial(self.actionDispatcher, 2, self.widgetClasses[2].runAll))
+
+        # self.actionLoad_Session.triggered.connect(
+        #     partial(self.actionDispatcher, 3, partial(self.widgetClasses[3].getLoadPath, True)))
+        # self.actionSave_Session.triggered.connect(
+        #     partial(self.actionDispatcher, 3, partial(self.widgetClasses[3].getSavePath, True)))
+
+    def actionDispatcher(self,index, method = None):
+        '''
+        This will dispatch the actions to the right 
+        function but still try to check if the page is
+        the right one.
+        '''
+        # if not self.stack.currentIndex() == index:
+        #     if index == 0:
+        #         self.refreshChecked(0)
+        #     if index == 1:
+        #         if not self.widgetClasses[1].io_core == self.handler.current_env.io:
+        #             self.widgetClasses[1].link(self.handler.current_env.io)
+        #         self.refreshChecked(1)
+        #     elif index == 2:
+        #         if not self.widgetClasses[2].env == self.handler.current_env:
+        #             self.widgetClasses[2].link(self.handler.current_env)
+        #         self.refreshChecked(2)
+        #     elif index == 3:
+        #         self.refreshChecked(3)
+
+        # if not method == None:
+        #     method()
+
+    def link(self, handler):
+        '''
+        link the class that will manage the current 
+        input output.
+        Input: meta_class is the metadata class from the io
+        '''
+        # self.setActivity(
+        #     'Linking',0,3)
+        
+        # self.setProgress('Linking handler',0)
+        # self.handler = handler 
+
+        # self.setProgress('Linking script view',1)
+        # self.widgetClasses[0].link(self.handler)
+
+        # self.setProgress('Linking script view',3)
+        # self.widgetClasses[3].link(self.handler)
+
+        # self.fadeActivity()
+        
+    def initialize(self):
+        '''
+        This method checks if the data has been set
+        in a previous instance.
+        '''
+        self.stack = QtWidgets.QStackedWidget()
+
+        self.widgetClasses = []
+        # self.widgetClasses = [
+        #     PageEnvWidget(self.stack, self),
+        #     PageDataWidget(self.stack, self),
+        #     PageScriptWidget(self.stack, self),
+        #     PageIOWidget(self.stack, self)]
+
+        # self.stack.addWidget(self.widgetClasses[1].local_widget)
+
+        for element in self.widgetClasses:
+            self.stack.addWidget(element.local_widget)
+
+        self.main_layout.addWidget(self.stack)

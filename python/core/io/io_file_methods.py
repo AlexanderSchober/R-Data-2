@@ -32,7 +32,7 @@ def get_files_in_folder(path, extension = None):
     Whatever path is set as folder the machinery
     checks first that this path is valid and then
     goes through the folder and sends back a 
-    list of absolut pathss. 
+    list of absolute paths. 
     ———————
     Input: -
     ———————
@@ -153,10 +153,8 @@ def getRuntimeDir(Parent = False):
     This would allow multiple users to use the runtime.
     ############################################################
     '''
-    
-    #check if windows
-    if isWindows():# or IsLinux():
-        
+
+    if isWindows():
         if not Parent:
             RunPath = os.path.dirname(
                 os.path.abspath(__file__)).split(os.path.sep)[:-2]
@@ -210,3 +208,21 @@ def isLinux():
     
     else:
         return False
+
+
+
+def getFileNames(Before, After):
+    '''
+    Get all filenames in a folder with the given
+    before and after.
+    '''
+    if isWindows():
+        Before = Before+os.path.sep
+    
+    Paths = glob.glob(os.path.join(Before,'*'+After))
+
+    if isLinux():
+        for Element in Paths:
+            Element.replace('\\', os.path.sep)
+
+    return Paths

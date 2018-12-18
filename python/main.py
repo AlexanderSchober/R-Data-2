@@ -23,7 +23,7 @@
 
 
 from .gui.window_handlers import WindowHandler
-from .environment import EnvironmentHandler
+from .core.environment import EnvironmentHandler
 
 class Main:
     '''
@@ -47,10 +47,10 @@ class Main:
         self.window_handler.run()
 
     def initCore(self):
-        self.env_hanler = EnvironmentHandler()
+        self.env_handler = EnvironmentHandler()
 
     def initGUI(self):
-        self.window_handler = WindowHandler()
+        self.window_handler = WindowHandler(self.env_handler)
 
     def connectAll(self):
         target = self.window_handler.main_window.target
