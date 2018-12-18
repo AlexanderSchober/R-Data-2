@@ -26,6 +26,7 @@ from PyQt5.QtCore import QThread
 from PyQt5.QtCore import pyqtSignal
 
 import numpy as np
+import itertools
 from scipy.optimize import least_squares
 from scipy.optimize import leastsq
 from scipy.sparse.linalg import spsolve
@@ -39,6 +40,8 @@ class FitWorker(QThread, FunctionLibrary):
     performed. 
     '''
     my_event = pyqtSignal()
+    progress_int = pyqtSignal(int)
+    progress_str = pyqtSignal(int)
 
     def __init__(self):
         QThread.__init__(self)
@@ -46,7 +49,10 @@ class FitWorker(QThread, FunctionLibrary):
         self.initialize()
 
     def run(self):
-        
+        '''
+        This is the run method of the 
+        QThread class overwritten. 
+        '''
         self.fitter.functions = self.func_dict
         self.fitter.fit()
         self.my_event.emit()
@@ -78,7 +84,7 @@ class FitWorker(QThread, FunctionLibrary):
             repetition
             ]
 
-class Fitter():
+class Fitter(QtCore.QObject):
     '''
     This class will be initiated and run 
     to do the fit. It will hold all the 
@@ -90,6 +96,7 @@ class Fitter():
     progress_str = pyqtSignal(str)
 
     def __init__(self):
+        QtCore.QObject.__init__(self)
         self.container = []
         self.x = []
         self.y = []
@@ -97,15 +104,94 @@ class Fitter():
 
     def fit(self):
         '''
-        perform the fit
+        perform the fit. Loop over all functions and all
+        parameters and then check if it is fixed and if not
+        proceed. 
         '''
-        pointer = self.container[0]
+        pointer     = self.container[0]
+        keys        = [key for key in self.functions.keys()] 
+        self.setProgressVal()
+        i = 0
 
-        for k in range(self.container[2]):
-            for l in pointer:
-                print(k,l)
+        for k, l  in itertools.product(range(self.container[2]), pointer):
 
-    def residue(self,p,function,idx,y,x):
+            # set the progress
+            self.progress_str.emit('Fitting the '+str(keys[l]) + 'functions')
+
+            for o,m,n in itertools.product(
+                range(self.functions[keys[l]][0].para_proc[0]),
+                range(len(self.functions[keys[l]][2])),
+                range(self.functions[keys[l]][0].para_num)):
+
+                # set the progress
+                self.progress_int.emit(self.grabProgressVal(i))
+                
+                #if not fixed
+                if not self.functions[keys[l]][2][m].para_fix[self.functions[keys[l]][0].para_proc[1][n]]: 
+                    temp_y = self.constructor(
+                        ignore  = [keys[l],m],
+                        data    = self.y,
+                        x       = self.x)
+
+                    self.fitFunction(
+                        self.y,
+                        temp_y,
+                        [keys[l],m],
+                        self.functions[keys[l]][0].para_proc[1][n])
+                i += 1
+
+    def setProgressVal(self):
+        '''
+        Prepare the progress report by setting the
+        self.max_progress values
+        '''
+        pointer     = self.container[0]
+        keys        = [key for key in self.functions.keys()] 
+        self.max_progress = 0
+
+        for k, l  in itertools.product(range(self.container[2]), pointer):
+            for o,m,n in itertools.product(
+                range(self.functions[keys[l]][0].para_proc[0]),
+                range(len(self.functions[keys[l]][2])),
+                range(self.functions[keys[l]][0].para_num)):
+                self.max_progress +=1
+
+    def grabProgressVal(self, val):
+        '''
+        Prepare the progress report by setting the
+        self.max_progress values
+        '''
+        return float(val) / float(self.max_progress) * 100.
+
+
+    def fitFunction(self, y, temp_y, selected, parameter):
+        '''
+        This is the actual fit worker. he will run
+        through the leastsquare of one element.
+        '''
+        fit_target = self.functions[selected[0]][2][selected[1]]
+        fit_target.current_par = int(parameter)
+        fit_target.x = self.x
+
+        bounds = self.fetchBounds(
+            float(fit_target.paras[int(parameter)]),
+            fit_target.info.para_bound[int(parameter)][2],
+            fit_target.info.para_bound[int(parameter)][:2],
+            fit_target.info.para_bound[int(parameter)+1][2],
+            fit_target.info.para_bound[int(parameter)+1][:2])
+
+        fit_target.paras[int(parameter)] = float(
+            least_squares(
+                self.residue,
+                bounds[1],
+                args = (
+                    fit_target.fitWrapper,
+                    y, 
+                    temp_y),
+                bounds = bounds[0],
+                verbose=0).x[0])
+
+    def residue(self,p,function,y, temp_y):
         '''
         This is the residual function that evaluates 
         the deference between the data
@@ -115,18 +201,33 @@ class Fitter():
         - y: the curve to compare
         - x: the axis to feed.
         '''
-        #calculate error
-        err = np.sum([abs(l) for l in y - function(idx,x,p)])*self.container[1]
-        
+        err = np.sum([abs(l) for l in y - (function(p) + temp_y)])*self.container[1]
         return err
 
-    def FetchBounds(self, para,rel_bool,rel_bound,abs_bool,abs_bound):
+    def fetchBounds(self, para, rel_bool, rel_bound, abs_bool, abs_bound):
         '''
         A more sophisticated method was recquired 
         to check the bounds as we now compare
         the relative and absolute bounds.
         '''
- 
+        pointer = [rel_bound, abs_bound]
+        for i in range(2):
+            for j in range(2):
+                if pointer[i][j] == 'xmin':
+                    pointer[i][j] = np.min(self.x)
+                elif pointer[i][j] == 'ymin':
+                    pointer[i][j] = np.min(self.y)
+                elif pointer[i][j] == 'xmax':
+                    pointer[i][j] = np.max(self.x)
+                elif pointer[i][j] == 'ymax':
+                    pointer[i][j] = np.max(self.y)
+                elif pointer[i][j] == '-Inf':
+                    pointer[i][j] = -np.inf
+                elif pointer[i][j] == 'Inf':
+                    pointer[i][j] = np.inf
+                else:
+                    pointer[i][j] = float(pointer[i][j])
+
         # reorganise if the order is wrong
         if abs_bound[0] > abs_bound[1]:
             abs_bound[0], abs_bound[1]  = abs_bound[1] , abs_bound[0]
@@ -161,3 +262,21 @@ class Fitter():
             return [-np.inf, np.inf], para
 
         return [LowerBound, UpperBound], para
+
+    def constructor(self,ignore = None , data = None, x = None):
+        '''
+        This function will try to create the
+        data minus all the functions that are not 
+        currently being fitted.
+        '''
+        data = np.zeros(data.shape)
+
+        for key in self.functions.keys():
+            for m in range(len(self.functions[key][2])):
+                if not [key,m] == ignore:
+                    data = data + self.functions[key][2][m].quickReturn(x)
+
+        return data
+
+
+        

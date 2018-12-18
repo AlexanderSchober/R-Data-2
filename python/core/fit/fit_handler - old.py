@@ -652,7 +652,7 @@ class FitMainClass:
                                           Data = list(DataY),
                                           X = DataX)
                 #re-expressing the
-                self.FitGeneral(Order[jj],
+                self.(Order[jj],
                                 event,
                                 queue,
                                 DataX,
@@ -853,13 +853,10 @@ class FitMainClass:
 
         #if user wants to process a specific
         elif not Proceed_1 == 'NONE' and not Proceed_1 == 'STR':
-            
             #Loop over all lorentzians
             for j in range(0,len(self.Function_Pointers[idx][Num])):
-                
                 #fetch the minimum
                 Para = float(self.Function_Pointers[idx][Num][j].Parameters[-1])
-
                 #Process it
                 self.Function_Pointers[idx][Num][j].Compute(self.CreatedX)
 
@@ -874,8 +871,7 @@ class FitMainClass:
         elif  Proceed_1 == 'STR':
             
             #loop over all
-            for m in range(0, self.Function_Pointers[idx]):
-                
+            for m in range(0, self.Function_Pointers[idx]):   
                 #set the FitTot
                 self.FitTot[m] = [numpy.copy(self.CreatedX), self.PolyFunction(idx,self.CreatedX,0, Num = m)]
                 
@@ -1119,9 +1115,9 @@ class FitMainClass:
 
         ####################################
         #computing the minimum
-        
         self.ParClass = None
         self.ParPick  = None
+
 
 
     def Residuals(self,p,Fun,idx,y,x):

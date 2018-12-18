@@ -50,10 +50,10 @@ class LorenzianInfo(InfoClass):
         #######################
         #parameter names
         self.para_name         = [
-            'Position',
-            'HWHM',
-            'Amplitude',
-            'Asymmetry']
+            ['Position', 2],
+            ['HWHM', 5],
+            ['Amplitude', 10],
+            ['Asymmetry', 1]]
                                         
         #Parameter units
         self.para_unit          = [
@@ -88,8 +88,8 @@ class LorenzianInfo(InfoClass):
         #######################
         #Parameter Boundaries
         self.para_proc    = [
-            '1',         # <- Number of iteration
-            '0,1,2,3']   # <- Order of Processing
+            1,         # <- Number of iteration
+            [0,1,2,3]]   # <- Order of Processing
                                        
 class Lorenzian(FunctionClass):
     '''
@@ -111,10 +111,10 @@ class Lorenzian(FunctionClass):
         Position    = para[1]
         HWHM_0      = para[2]
         Amplitude   = para[3]
-        Assymetry   = para[4]
+        Asymmetry   = para[4]
     
         #process the function
-        HWHM        = ((2*HWHM_0)/(1+np.exp(Assymetry*(np.array(x)-Position))) )
+        HWHM        = ((2*HWHM_0)/(1+np.exp(Asymmetry*(np.array(x)-Position))) )
         y           = (Amplitude*(HWHM**2)/((((x-Position))**2)+HWHM**2))
 
         return y

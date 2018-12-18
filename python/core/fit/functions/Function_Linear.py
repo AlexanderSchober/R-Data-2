@@ -49,10 +49,10 @@ class LinearInfo(InfoClass):
         
         #######################
         #parameter names
-        self.para_nam = [
-            'Position',
-            'Amplitude',
-            'Offset']
+        self.para_name = [
+            ['Position', 0],
+            ['Amplitude', 1],
+            ['Offset', 0]]
                                         
         #Parameter units
         self.para_unit  = [
@@ -81,8 +81,8 @@ class LinearInfo(InfoClass):
         #######################
         #Parameter Boundaries
         self.para_proc    = [
-            '1',         # <- Number of iteration
-            '0,1,2']   # <- Order of Processing
+            1,         # <- Number of iteration
+            [0,1,2]]   # <- Order of Processing
 
 class Linear(FunctionClass):
     '''

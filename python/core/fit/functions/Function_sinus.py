@@ -49,11 +49,11 @@ class SinusInfo(InfoClass):
         
         #######################
         #parameter names
-        self.para_nam   = [
-            'Phase',
-            'Factor',
-            'Amplitude',
-            'Offset']
+        self.para_name   = [
+            ['Phase', 0.],
+            ['Factor',1.],
+            ['Amplitude',2.],
+            ['Offset',0.]]
                                         
         #Parameter units
         self.para_unit  = [
@@ -87,8 +87,8 @@ class SinusInfo(InfoClass):
         #######################
         #Parameter Boundaries
         self.para_proc    = [
-            '1',         # <- Number of iteration
-            '0,1,2,3']   # <- Order of Processing
+            2,         # <- Number of iteration
+            [2,0,1,3]]   # <- Order of Processing
                                        
 class Sinus(FunctionClass):
     '''
@@ -107,7 +107,7 @@ class Sinus(FunctionClass):
         '''
 
         #function parameters
-        x           = np.asarray(para[0])
+        x           = np.array(para[0])
         Phase       = para[1]
         Factor      = para[2]
         Amplitude   = para[3]

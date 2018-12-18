@@ -48,7 +48,7 @@ class InfoClass:
 
         #######################
         #Parameter Boundaries
-        self.para_proc  = ['','']  
+        self.para_proc  = [None,[None]]  
 
 class FunctionClass:
     '''
@@ -61,14 +61,16 @@ class FunctionClass:
 
         self.type       = info.name
         self.info       = info
-        self.paras      = [0] * self.info.para_num
-        self.para_ini   = [0] * self.info.para_num
+        self.paras      = list([e[1] for e in self.info.para_name])
+        self.para_ini   = list([e[1] for e in self.info.para_name])
         self.para_fix   = list(self.info.para_fix_ini)
         self.calculated = False
         self.x          = []
+        self.current_par= 0
 
         if not source == None:
             self.clone(source)
+
 
     def function(self,para):
         '''
@@ -87,8 +89,9 @@ class FunctionClass:
         '''
         self.y_bis      = self.returnData(x)
         self.x          = x
-        self.y_range    = [np.min(self.yBis),np.max(self.yBis)]
+        self.y_range    = [np.min(self.y_bis),np.max(self.y_bis)]
         self.x_range    = [np.min(self.x),np.max(self.x)]
+        self.calculated = True
 
     def returnData(self,x):
         '''
@@ -99,10 +102,33 @@ class FunctionClass:
         is present compute it...
         '''
         paras = [x]
-        for i in range(0, self.info.para_num ):
-            paras.append(self.paras[i+1])
+        for i in range(self.info.para_num):
+            paras.append(self.paras[i])
 
         return self.function(paras)
+
+    def fitWrapper(self,val):
+        '''
+        This function serves to return the already computed function
+        This is particularly important when looping quick for
+        the function constructor
+        '''
+        paras = [self.x]
+        for element in self.paras:
+            paras.append(float(element))
+        paras[self.current_par + 1] = val
+        return self.function(paras)
+
+    def quickReturn(self, x):
+        '''
+        This function serves to return the already computed function
+        This is particularly important when looping quick for
+        the function constructor
+        '''
+        if not self.calculated:
+            self.compute(x)
+
+        return self.y_bis
 
     def clone(self, source):
         '''
@@ -121,6 +147,6 @@ class FunctionClass:
         self.info.para_proc     = list(source.info.para_proc)
 
         self.x              = np.array(source.x)
-        self.paras          = list(source.para)
+        self.paras          = list(source.paras)
         self.para_ini       = list(source.para_ini)
         self.para_fix       = list(source.para_fix)
