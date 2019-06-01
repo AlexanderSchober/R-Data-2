@@ -26,6 +26,7 @@ from .fit_worker import FitWorker
 from .function_library import FunctionLibrary
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import pyqtSignal
 import sys
 
 class FitHandler(QtCore.QObject, FunctionLibrary):
@@ -37,8 +38,8 @@ class FitHandler(QtCore.QObject, FunctionLibrary):
 
     Input is the environment containing the dataclass
     '''
-    progress_int = QtCore.pyqtSignal(int)
-    progress_str = QtCore.pyqtSignal(str)
+    progress_int = pyqtSignal(int)
+    progress_str = pyqtSignal(str)
 
     def __init__(self, env, gui = False):
         QtCore.QObject.__init__(self)
@@ -73,14 +74,7 @@ class FitHandler(QtCore.QObject, FunctionLibrary):
         Initialise the class by instating the worker 
         and setting up it's environment. 
         '''
-        self.fit_thread = QtCore.QThread()
         self.fit_worker = FitWorker()
-        self.fit_worker.moveToThread(self.fit_thread)
-        self.fit_thread.started.connect(self.fit_worker.run)
-        self.fit_worker.finished.connect(self.finishedFit)
-        self.fit_worker.fitter.progress_int.connect(self.reportProgressInt)
-        self.fit_worker.fitter.progress_str.connect(self.reportProgressStr)
-        
         self.importFunctions()
         self.current_ray = 0
 
@@ -98,18 +92,22 @@ class FitHandler(QtCore.QObject, FunctionLibrary):
         as soon as all the parameters have been set.
         '''
         self.prepareFit()
-        self.fit_thread.start()
+        self.fit_worker.fitter.progress_int.connect(self.reportProgressInt)
+        self.fit_worker.fitter.progress_str.connect(self.reportProgressStr)
+        self.fit_worker.run()
 
     def reportProgressInt(self, percentage):
         '''
         propagate the signals for the gui
         '''
+        #print(percentage, '% done')
         self.progress_int.emit(percentage)
         
     def reportProgressStr(self, message):
         '''
         propagate the signals for the gui
         '''
+        #print(percentage, '% done')
         self.progress_str.emit(message)
 
     def finishedFit(self):
@@ -118,7 +116,7 @@ class FitHandler(QtCore.QObject, FunctionLibrary):
         the fit elements from the worker if necessary.
         '''
         self.cloneFromWorker()
-        self.fit_thread.quit()
+        print('finished')
 
     def prepareFit(self):
         '''
@@ -128,12 +126,12 @@ class FitHandler(QtCore.QObject, FunctionLibrary):
         parameters. 
         '''
         import numpy as np
-        x = np.linspace(-10,10*np.pi,1000)
+        x = np.linspace(-4,5*np.pi,1000)
         y = np.sin(x) + 0.2 + 10 * 1 * 2 / ( (x - 4)**2 + 1**2) + 20 * 3 * 2 * 1 / ( (x - 7)**2 + 3**2)
 
         self.fit_worker.setXY(x, y)
         self.cloneToWorker()
-        self.fit_worker.setParameters([0, 1,2],1e10,10)
+        self.fit_worker.setParameters([0, 1,2],1e10,5)
 
     def cloneToWorker(self):
         '''
@@ -173,11 +171,15 @@ if __name__ == "__main__":
     main_widow.setCentralWidget(widget.widget)
     
 
+    
+
+
     worker = FitHandler(3, gui = True)
     worker.addFunction('Sinus', rays = 10)
     #worker.addFunction('Linear', rays = 10)
     worker.addFunction('Lorenzian', rays = 10)
     worker.addFunction('Lorenzian', rays = 10)
+    
     widget.link(worker)
 
 

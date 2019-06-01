@@ -51,7 +51,7 @@ class LinearInfo(InfoClass):
         #parameter names
         self.para_name = [
             ['Position', 0],
-            ['Amplitude', 1],
+            ['Amplitude', 0],
             ['Offset', 0]]
                                         
         #Parameter units
@@ -61,27 +61,27 @@ class LinearInfo(InfoClass):
             'Intensity']
 
         self.para_fix_ini   = [
+            True,
             False,
-            False,
-            True]   
+            False]   
                                        
         #######################
         #Parameter Boundaries
         self.para_bound    = [
-            ['-10','10', True],        # <- Relative shift min, max
+            ['-10','10', False],        # <- Relative shift min, max
             ['xmin','xmax', True],     # <- Absolute shift min, max
             
-            ['-2','2', True],          # <- Relative shift min, max
+            ['-2','2', False],          # <- Relative shift min, max
             ['0.01','Inf', True],      # <- Absolute shift min, max
             
-            ['-1000','1000', True],    # <- Relative shift min, max
+            ['-1000','1000', False],    # <- Relative shift min, max
             ['-Inf','Inf', True],         # <- Absolute shift min, max
             ]
 
         #######################
         #Parameter Boundaries
         self.para_proc    = [
-            1,         # <- Number of iteration
+            5,         # <- Number of iteration
             [0,1,2]]   # <- Order of Processing
 
 class Linear(FunctionClass):
@@ -105,10 +105,7 @@ class Linear(FunctionClass):
         Factor      = para[2]
         Offset      = para[3]
     
-    
         #process the function
-        y           = (( x - (Position) )
-                       * Factor
-                       + Offset)
+        y           = ( x - Position ) * Factor + Offset
         return y
     

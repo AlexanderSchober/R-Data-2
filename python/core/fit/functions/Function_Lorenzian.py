@@ -50,10 +50,10 @@ class LorenzianInfo(InfoClass):
         #######################
         #parameter names
         self.para_name         = [
-            ['Position', 2],
-            ['HWHM', 5],
-            ['Amplitude', 10],
-            ['Asymmetry', 1]]
+            ['Position', 2.],
+            ['HWHM', 2.],
+            ['Amplitude', 2],
+            ['Asymmetry', 0]]
                                         
         #Parameter units
         self.para_unit          = [
@@ -66,30 +66,29 @@ class LorenzianInfo(InfoClass):
             False,
             False,
             False,
-            False,
             True]    
 
         #######################
         #Parameter Boundaries
         self.para_bound    = [
-            ['-10','10', True],        # <- Relative shift min, max, active
+            ['-1','1', True],        # <- Relative shift min, max, active
             ['xmin','xmax', True],     # <- Absolute shift min, max, active
             
-            ['-2','2', True],          # <- Relative shift min, max, active
+            ['-1','1', True],          # <- Relative shift min, max, active
             ['0.01','200', True],      # <- Absolute shift min, max, active
             
-            ['-1000','1000', True],    # <- Relative shift min, max, active
+            ['-1000','1000', False],    # <- Relative shift min, max, active
             ['0','Inf', True],         # <- Absolute shift min, max, active
             
-            ['-10','10', True],        # <- Relative shift min, max, active
+            ['-10','10', False],        # <- Relative shift min, max, active
             ['-10','10', True],        # <- Absolute shift min, max, active
             ]
 
         #######################
         #Parameter Boundaries
         self.para_proc    = [
-            1,         # <- Number of iteration
-            [0,1,2,3]]   # <- Order of Processing
+            5,         # <- Number of iteration
+            [0,2,1,3]]   # <- Order of Processing
                                        
 class Lorenzian(FunctionClass):
     '''

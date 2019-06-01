@@ -52,7 +52,7 @@ class SinusInfo(InfoClass):
         self.para_name   = [
             ['Phase', 0.],
             ['Factor',1.],
-            ['Amplitude',2.],
+            ['Amplitude',3.],
             ['Offset',0.]]
                                         
         #Parameter units
@@ -71,23 +71,23 @@ class SinusInfo(InfoClass):
         #######################
         #Parameter Boundaries
         self.para_bound    = [
-            ['-10','10', True],        # <- Relative shift min, max
+            ['-1','1', True],        # <- Relative shift min, max
             ['xmin','xmax', True],     # <- Absolute shift min, max
             
-            ['-2','2', True],          # <- Relative shift min, max
+            ['-2','2', False],          # <- Relative shift min, max
             ['0.01','200', True],      # <- Absolute shift min, max
             
-            ['-1000','1000', True],    # <- Relative shift min, max
-            ['0','Inf'],         # <- Absolute shift min, max
+            ['-1000','1000', False],    # <- Relative shift min, max
+            ['0','Inf', True],         # <- Absolute shift min, max
             
-            ['-10','10', True],        # <- Relative shift min, max
+            ['-10','10', False],        # <- Relative shift min, max
             ['-10','10', True],        # <- Absolute shift min, max
             ]
 
         #######################
         #Parameter Boundaries
         self.para_proc    = [
-            2,         # <- Number of iteration
+            5,         # <- Number of iteration
             [2,0,1,3]]   # <- Order of Processing
                                        
 class Sinus(FunctionClass):

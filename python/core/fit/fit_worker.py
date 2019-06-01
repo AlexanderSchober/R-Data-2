@@ -33,21 +33,23 @@ from scipy.sparse.linalg import spsolve
 
 from .function_library import FunctionLibrary
 
-class FitWorker(QThread, FunctionLibrary):
+class FitWorker(QtCore.QObject, FunctionLibrary):
     '''
     The fit worker will be modified before fit
     and then started as the task has to be 
     performed. 
     '''
-    my_event = pyqtSignal()
-    progress_int = pyqtSignal(int)
-    progress_str = pyqtSignal(int)
+    my_event        = pyqtSignal()
+    progress_int    = pyqtSignal(int)
+    progress_str    = pyqtSignal(int)
+    finished        = pyqtSignal()
 
     def __init__(self):
-        QThread.__init__(self)
+        QtCore.QObject.__init__(self)
         FunctionLibrary.__init__(self)
         self.initialize()
 
+    @QtCore.pyqtSlot()  
     def run(self):
         '''
         This is the run method of the 
@@ -55,7 +57,7 @@ class FitWorker(QThread, FunctionLibrary):
         '''
         self.fitter.functions = self.func_dict
         self.fitter.fit()
-        self.my_event.emit()
+        self.finished.emit()
 
     def initialize(self):
         '''
@@ -172,13 +174,14 @@ class Fitter(QtCore.QObject):
         fit_target = self.functions[selected[0]][2][selected[1]]
         fit_target.current_par = int(parameter)
         fit_target.x = self.x
+        fit_target.calculated = False
 
         bounds = self.fetchBounds(
             float(fit_target.paras[int(parameter)]),
-            fit_target.info.para_bound[int(parameter)][2],
-            fit_target.info.para_bound[int(parameter)][:2],
-            fit_target.info.para_bound[int(parameter)+1][2],
-            fit_target.info.para_bound[int(parameter)+1][:2])
+            fit_target.info.para_bound[int(parameter)*2][2],
+            fit_target.info.para_bound[int(parameter)*2][:2],
+            fit_target.info.para_bound[(int(parameter)*2+1)][2],
+            fit_target.info.para_bound[(int(parameter)*2+1)][:2])
 
         fit_target.paras[int(parameter)] = float(
             least_squares(
